@@ -1,0 +1,116 @@
+version: '2'
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - 15672:15672
+
+  config:
+    environment:
+      CONFIG_SERVICE_PASSWORD: root
+    build: config
+    restart: always
+    ports:
+      - 8888:8888
+
+  registry:
+    environment:
+      CONFIG_SERVICE_PASSWORD: root
+    build: registry
+    restart: always
+    ports:
+      - 8761:8761
+
+  gateway:
+    environment:
+      CONFIG_SERVICE_PASSWORD: root
+    build: gateway
+    restart: always
+    ports:
+      - 80:4000
+
+  auth-service:
+    environment:
+      CONFIG_SERVICE_PASSWORD: root
+      NOTIFICATION_SERVICE_PASSWORD: root
+      STATISTICS_SERVICE_PASSWORD: root
+      ACCOUNT_SERVICE_PASSWORD: root
+      MONGODB_PASSWORD: root
+    build: auth-service
+    restart: always
+    ports:
+      - 5000:5000
+
+  auth-mongodb:
+    environment:
+      MONGODB_PASSWORD: root
+    build: mongodb
+    restart: always
+    ports:
+      - 25000:27017
+
+  account-service:
+    environment:
+      CONFIG_SERVICE_PASSWORD: root
+      ACCOUNT_SERVICE_PASSWORD: root
+      MONGODB_PASSWORD: root
+    build: account-service
+    restart: always
+    ports:
+      - 6000:6000
+
+  account-mongodb:
+    environment:
+      INIT_DUMP: account-service-dump.js
+      MONGODB_PASSWORD: root
+    build: mongodb
+    restart: always
+    ports:
+      - 26000:27017
+
+  statistics-service:
+    environment:
+      CONFIG_SERVICE_PASSWORD: root
+      MONGODB_PASSWORD: root
+      STATISTICS_SERVICE_PASSWORD: root
+    build: statistics-service
+    restart: always
+    ports:
+     - 7000:7000
+
+  statistics-mongodb:
+    environment:
+      MONGODB_PASSWORD: root
+    build: mongodb
+    restart: always
+    ports:
+      - 27000:27017
+
+  notification-service:
+    environment:
+      CONFIG_SERVICE_PASSWORD: root
+      MONGODB_PASSWORD: root
+      NOTIFICATION_SERVICE_PASSWORD: root
+    build: notification-service
+    restart: always
+    ports:
+      - 8000:8000
+
+  notification-mongodb:
+    environment:
+      MONGODB_PASSWORD: root
+    build: mongodb
+    restart: always
+    ports:
+      - 28000:27017
+
+  monitoring:
+    environment:
+      CONFIG_SERVICE_PASSWORD: root
+    build: monitoring
+    restart: always
+    ports:
+      - 9000:8080
+      - 8989:8989
